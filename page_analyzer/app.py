@@ -38,8 +38,8 @@ def show_url(id):
     return render_template('url_detail.html')
 
 
-@app.route('/urls/<int:id>/cheks', methods=['POST'])
-def chek_url(id):
+@app.route('/urls/<int:id>/checks', methods=['POST'])
+def check_url(id):
     pass
 
 
