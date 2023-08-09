@@ -1,4 +1,7 @@
 from dotenv import load_dotenv
+import psycopg2
+import os
+import requests
 from flask import (
     Flask,
     flash,
@@ -9,8 +12,6 @@ from flask import (
     request,
     url_for,
 )
-import psycopg2
-import os
 
 load_dotenv()
 
