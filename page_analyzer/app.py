@@ -1,9 +1,7 @@
 import os
+
 import requests
 from dotenv import load_dotenv
-from url_utilities import validate, normalize
-from page_parser import get_page_data
-from db import UrlCheckDatabase, UrlDatabase
 from flask import (
     Flask,
     flash,
@@ -12,6 +10,9 @@ from flask import (
     url_for,
     abort
 )
+from db import UrlCheckDatabase, UrlDatabase
+from page_parser import get_page_data
+from url_utilities import validate, normalize
 
 load_dotenv()
 
@@ -99,7 +100,10 @@ def check_url(record_id):
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('errors.html', title='Page not found'), 404
+    return render_template(
+        'errors.html',
+        title='Page not found'
+    ), 404
 
 
 @app.errorhandler(500)
