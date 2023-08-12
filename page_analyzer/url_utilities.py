@@ -6,7 +6,7 @@ MAX_URL_LENGTH = 255
 
 def validate(url):
     errors = []
-    if not url.validator(url):
+    if not url_validator(url):
         errors.append('Некорректный URL')
     if len(url) > MAX_URL_LENGTH:
         errors.append('URL превышает 255 символов')
