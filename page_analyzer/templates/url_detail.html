@@ -13,8 +13,12 @@
                     <td>{{ record.id }}</td>
                 </tr>
                 <tr>
+                    <td>Имя</td>
+                    <td>{{ record.name }}</td>
+                </tr>
+                <tr>
                     <td>Дата создания</td>
-                    <td>{{ record.created_at }}</td>
+                    <td>{{ record.created_at.strftime('%Y-%m-%d') }}</td>
                 </tr>
             </tbody>
         </table>
@@ -42,7 +46,7 @@
                 <td>{{ url_check.h1 }}</td>
                 <td>{{ url_check.title }}</td>
                 <td>{{ url_check.description }}</td>
-                <td>{{ url_check.created_at }}</td>
+                <td>{{ url_check.created_at.strftime('%Y-%m-%d') }}</td>
         </tr>
             {-% endfor %}
             </tbody>

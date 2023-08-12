@@ -25,8 +25,13 @@ class UrlDatabase(object):
     def save(self, url_data):
         with launch_connection() as connection:
             with connection.cursor() as cursor:
-                cursor.execute('INSERT INTO urls(name, created_at) VALUES(%s, %s) RETURNING id:',
-                               (url_data.get('name'), str(datetime.now())))
+                cursor.execute(
+                    'INSERT INTO urls(name, created_at) VALUES(%s, %s) RETURNING id:',
+                    (
+                        url_data.get('name'),
+                        str(datetime.now())
+                    )
+                )
                 record = cursor.fetchone()
                 connection.commit()
             return record[0]
@@ -40,15 +45,35 @@ class UrlDatabase(object):
     def find_all(self, limit=10):
         with launch_connection() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute('SELECT urls.name, ch.status_code, ch.url_id, ch.created_at,\
-                               FROM urls\
-                               JOIN url_checks as ch\
-                               ON ch.url_id = urls.id\
-                               AND ch.created_at IN (SELECT MAX(created_at) FROM url_checks GROUP BY url_id)\
-                               ORDER BY url_id DESC\
-                               LIMIT %s;',
-                               (limit,))
+                cursor.execute(
+                    'SELECT urls.name, ch.status_code, ch.url_id, ch.created_at,\
+                    FROM urls\
+                    JOIN url_checks as ch\
+                    ON ch.url_id = urls.id\
+                    AND ch.created_at IN (SELECT MAX(created_at) FROM url_checks GROUP BY url_id)\
+                    ORDER BY url_id DESC\
+                    LIMIT %s;',
+                    (limit,)
+                )
                 return cursor.fetchall()
+
+    def find_url_id(self, url_id):
+        with launch_connection() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    'SELECT * FROM urls WHERE id = %s;',
+                    (url_id,),
+                )
+                return cursor.fetchone
+
+    def find_url_name(self, url_name):
+        with launch_connection() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    'SELECT * FROM urls WHERE name = %s',
+                    (url_name,),
+                )
+                return cursor.fetchone
 
 
 class UrlCheckDatabase(object):

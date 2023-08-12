@@ -22,7 +22,7 @@
                         {{ record.name }}
                     </a>
                 </td>
-                <td>{{ record.created_at }}</td>
+                <td>{{ record.created_at.strftime('%Y-%m-%d') }}</td>
                 <td>{{ record.status_code }}</td>
             </tr>
             {% endfor %}
