@@ -21,11 +21,13 @@
 </nav>
 </header>
 
+{% with messages =  get_flashed_messages(with_categories=True) %}
 {% if message %}
   {% for category, message in messages %}
     <p class="alert alert-{{category}}">{{ message }}</p>
 {% endfor %}
 {% endif %}
+{% endwith %}
 
 {% block content %}
 {% endblock %}
