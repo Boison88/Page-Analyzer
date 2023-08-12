@@ -98,8 +98,16 @@ def check_url(record_id):
 
 
 @app.errorhandler(404)
-def show_error_page(error):
-    return render_template('page404.html', title='Page not found'), 404
+def page_not_found(error):
+    return render_template('errors.html', title='Page not found'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template(
+        'errors.html',
+        title='Внутренняя ошибка сервера'
+    ), 500
 
 
 if __name__ == '__main__':
