@@ -1,5 +1,6 @@
-from dotenv import load_dotenv
+import os
 import requests
+from dotenv import load_dotenv
 from url_utilities import validate, normalize
 from page_parser import get_page_data
 from db import UrlCheckDatabase, UrlDatabase
@@ -48,13 +49,19 @@ def post_url():
         existing_record = repo.find_url_name(normalized_url)
         if existing_record:
             flash('Страница уже существует', 'info')
-            return redirect(url_for('show_url', record_id=existing_record.get('id')))
+            return redirect(
+                url_for('show_url', record_id=existing_record.get('id'))
+            )
 
         flash('Страница успешно добавлена', 'success')
-        return redirect(url_for('show_url', record_id=repo.save({'name': normalized_url})))
+        return redirect(
+            url_for('show_url', record_id=repo.save({'name': normalized_url}))
+        )
 
     except Exception as ex:
-        flash('Error {raised_ex} while save url'.format(raised_ex=ex), 'danger')
+        flash(
+            'Error {raised_ex} while save url'.format(raised_ex=ex), 'danger'
+        )
         return redirect(url_for('index'))
 
 
@@ -66,7 +73,9 @@ def show_url(record_id):
         return abort(404)
 
     url_checks = UrlCheckDatabase().find_all_checks(record_id)
-    return render_template('url_detail.html', record=url_record, url_checks=url_checks)
+    return render_template(
+        'url_detail.html', record=url_record, url_checks=url_checks
+    )
 
 
 @app.route('/urls/<int:record_id>/checks', methods=['POST'])
@@ -87,6 +96,7 @@ def check_url(record_id):
     checks.save_check(record_id, new_check)
     flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', record_id=record_id))
+
 
 @app.errorhandler(404)
 def show_error_page(error):

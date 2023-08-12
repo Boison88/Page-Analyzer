@@ -26,7 +26,8 @@ class UrlDatabase(object):
         with launch_connection() as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    'INSERT INTO urls(name, created_at) VALUES(%s, %s) RETURNING id:',
+                    'INSERT INTO urls(name, created_at)\
+                    VALUES(%s, %s) RETURNING id:',
                     (
                         url_data.get('name'),
                         str(datetime.now())
@@ -46,11 +47,13 @@ class UrlDatabase(object):
         with launch_connection() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
-                    'SELECT urls.name, ch.status_code, ch.url_id, ch.created_at,\
+                    'SELECT\
+                    urls.name, ch.status_code, ch.url_id, ch.created_at,\
                     FROM urls\
                     JOIN url_checks as ch\
                     ON ch.url_id = urls.id\
-                    AND ch.created_at IN (SELECT MAX(created_at) FROM url_checks GROUP BY url_id)\
+                    AND ch.created_at IN (SELECT MAX(created_at)\
+                    FROM url_checks GROUP BY url_id)\
                     ORDER BY url_id DESC\
                     LIMIT %s;',
                     (limit,)
@@ -81,7 +84,8 @@ class UrlCheckDatabase(object):
         with launch_connection() as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    'INSERT INTO url_checks(url_id, status_code, h1, title, description, created_at)\
+                    'INSERT INTO url_checks\
+                    (url_id, status_code, h1, title, description, created_at)\
                     VALUES(%s, %s, %s, %s, %s, %s);',
                     (
                         url_id, check_data.get('status_code', ''),
@@ -96,5 +100,9 @@ class UrlCheckDatabase(object):
     def find_all_checks(self, url_id):
         with launch_connection() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute('SELECT * FROM url_checks WHERE url_id=%s ORDER BY created_at DESC;', (url_id,))
+                cursor.execute(
+                    'SELECT * FROM url_checks WHERE url_id=%s\
+                    ORDER BY created_at DESC;',
+                    (url_id,)
+                )
                 return cursor.fetchall()
