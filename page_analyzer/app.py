@@ -40,7 +40,7 @@ def post_url():
     if errors:
         for error in errors:
             flash(error, 'danger')
-        return render_template('index.html',), 422
+        return render_template('index.html'), 422
 
     normalized_url = normalize(url_address)
     try:
