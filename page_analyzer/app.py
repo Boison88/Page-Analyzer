@@ -10,6 +10,7 @@ from flask import (
     url_for,
     abort
 )
+
 from db import UrlCheckDatabase, UrlDatabase
 from page_parser import get_page_data
 from url_utilities import validate, normalize
