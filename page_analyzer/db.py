@@ -87,7 +87,7 @@ class UrlCheckDatabase(object):
                         url_id, check_data.get('status_code', ''),
                         check_data.get('h1', ''),
                         check_data.get('title', ''),
-                        check_data.get('description', ''),
+                        check_data.get('meta', ''),
                         str(datetime.now()),
                     ),
                 )

@@ -1,15 +1,15 @@
 from bs4 import BeautifulSoup
 
 TAGS = (
-    ('h1', ''),
-    ('title', ''),
+    ('h1', {}),
+    ('title', {}),
     ('meta', {'name': 'description'}),
 )
 
 
 def get_page_data(page_content):
     page_data = {}
-    soup = BeautifulSoup(page_content, 'lxml')
+    soup = BeautifulSoup(page_content, 'html.parser')
     for tag, attribute in TAGS:
         found_data = soup.find(tag, attribute)
         if found_data:
