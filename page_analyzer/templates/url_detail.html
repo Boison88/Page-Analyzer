@@ -33,23 +33,23 @@
     <table class="table-bordered table-hover mt-2" data-test="checks">
       <tbody>
     <tr>
-      <th>ID</th>
-      <th>Код ответа</th>
-      <th>h1</th>
-      <th>title</th>
-      <th>description</th>
-      <th>Дата создания</th>
+        <th>ID</th>
+        <th>Код ответа</th>
+        <th>h1</th>
+        <th>title</th>
+        <th>description</th>
+        <th>Дата создания</th>
     </tr>
     {% for url_check in url_checks -%}
     <tr>
-      <td>{{ url_check.id }}</td>
-      <td>{{ url_check.status_code }}</td>
-      <td>{{ url_check.h1 }}</td>
-      <td>{{ url_check.title }}</td>
-      <td>{{ url_check.description }}</td>
-      <td>{{ url_check.created_at.strftime('%Y-%m-%d') }}</td>
+        <td>{{ url_check.id }}</td>
+        <td>{{ url_check.status_code }}</td>
+        <td>{{ url_check.h1 }}</td>
+        <td>{{ url_check.title }}</td>
+        <td>{{ url_check.description }}</td>
+        <td>{{ url_check.created_at.strftime('%Y-%m-%d') }}</td>
     </tr>
-    {-% endfor %}
+    {%- endfor %}
       </tbody>
     </table>
   </div>
