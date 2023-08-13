@@ -1,5 +1,7 @@
 import os
-
+from db import UrlCheckDatabase, UrlDatabase
+from page_parser import get_page_data
+from url_utilities import validate, normalize
 import requests
 from dotenv import load_dotenv
 from flask import (
@@ -10,10 +12,6 @@ from flask import (
     url_for,
     abort
 )
-
-from db import UrlCheckDatabase, UrlDatabase
-from page_parser import get_page_data
-from url_utilities import validate, normalize
 
 load_dotenv()
 
