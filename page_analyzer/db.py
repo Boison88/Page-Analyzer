@@ -48,7 +48,7 @@ class UrlDatabase(object):
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
                     'SELECT\
-                    urls.name, ch.status_code, ch.url_id, ch.created_at,\
+                    urls.name, ch.status_code, ch.url_id, ch.created_at\
                     FROM urls\
                     JOIN url_checks as ch\
                     ON ch.url_id = urls.id\

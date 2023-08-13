@@ -6,7 +6,15 @@ from page_analyzer.url_utilities import validate, normalize
 from page_analyzer.db import UrlCheckDatabase, UrlDatabase
 
 from dotenv import load_dotenv
-from flask import Flask, flash, redirect, render_template, url_for, abort
+from flask import (
+    Flask,
+    flash,
+    redirect,
+    render_template,
+    url_for,
+    abort,
+    request
+)
 
 
 load_dotenv()
@@ -31,7 +39,7 @@ def show_urls():
 
 @app.route('/urls', methods=['POST'])
 def post_url():
-    url_address = requests.form.get('url')
+    url_address = request.form.get('url')
     errors = validate(url_address)
     if errors:
         for error in errors:
