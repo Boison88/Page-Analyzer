@@ -27,7 +27,7 @@ class UrlDatabase(object):
             with connection.cursor() as cursor:
                 cursor.execute(
                     'INSERT INTO urls(name, created_at)\
-                    VALUES(%s, %s) RETURNING id:',
+                    VALUES(%s, %s) RETURNING id;',
                     (
                         url_data.get('name'),
                         str(datetime.now())
@@ -67,16 +67,16 @@ class UrlDatabase(object):
                     'SELECT * FROM urls WHERE id = %s;',
                     (url_id,),
                 )
-                return cursor.fetchone
+                return cursor.fetchone()
 
     def find_url_name(self, url_name):
         with launch_connection() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
-                    'SELECT * FROM urls WHERE name = %s',
+                    'SELECT * FROM urls WHERE name = %s;',
                     (url_name,),
                 )
-                return cursor.fetchone
+                return cursor.fetchone()
 
 
 class UrlCheckDatabase(object):
@@ -88,7 +88,8 @@ class UrlCheckDatabase(object):
                     (url_id, status_code, h1, title, description, created_at)\
                     VALUES(%s, %s, %s, %s, %s, %s);',
                     (
-                        url_id, check_data.get('status_code', ''),
+                        url_id,
+                        check_data.get('status_code', ''),
                         check_data.get('h1', ''),
                         check_data.get('title', ''),
                         check_data.get('meta', ''),
