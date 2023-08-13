@@ -1,17 +1,13 @@
 import os
-from db import UrlCheckDatabase, UrlDatabase
-from page_parser import get_page_data
-from url_utilities import validate, normalize
 import requests
+
+from page_analyzer.page_parser import get_page_data
+from page_analyzer.url_utilities import validate, normalize
+from page_analyzer.db import UrlCheckDatabase, UrlDatabase
+
 from dotenv import load_dotenv
-from flask import (
-    Flask,
-    flash,
-    redirect,
-    render_template,
-    url_for,
-    abort
-)
+from flask import Flask, flash, redirect, render_template, url_for, abort
+
 
 load_dotenv()
 

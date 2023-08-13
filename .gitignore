@@ -1,4 +1,4 @@
 .idea
 .venv/
-.env
+page_analyzer/.env
 .DS_Store
