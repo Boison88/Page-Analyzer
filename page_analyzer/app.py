@@ -116,7 +116,3 @@ def internal_server_error(error):
         'errors.html',
         title='Внутренняя ошибка сервера'
     ), 500
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
