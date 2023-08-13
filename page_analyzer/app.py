@@ -86,18 +86,19 @@ def check_url(record_id):
     url_record = UrlDatabase().find_url_id(record_id)
     if not url_record:
         return abort(404)
+
     try:
         response = requests.get(url_record.get('name'))
         response.raise_for_status()
     except requests.exceptions.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
-        return redirect(url_for('show_url', record_id=record_id))
 
-    checks = UrlCheckDatabase()
-    new_check = {'status_code': response.status_code}
-    new_check.update(get_page_data(response.content.decode()))
-    checks.save_check(record_id, new_check)
-    flash('Страница успешно проверена', 'success')
+    else:
+        checks = UrlCheckDatabase()
+        new_check = {'status_code': response.status_code}
+        new_check.update(get_page_data(response.content.decode()))
+        checks.save_check(record_id, new_check)
+        flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', record_id=record_id))
 
 
