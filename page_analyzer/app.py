@@ -3,7 +3,14 @@ import requests
 
 from page_analyzer.page_parser import get_page_data
 from page_analyzer.urls import validate, normalize
-from page_analyzer.db import UrlCheckDatabase, UrlDatabase
+from page_analyzer.db import (
+save,
+find_all,
+find_url_id,
+find_url_name,
+save_check,
+find_all_checks,
+)
 
 from dotenv import load_dotenv
 from flask import (
@@ -30,7 +37,7 @@ def index():
 
 @app.route('/urls', methods=['GET'])
 def show_urls():
-    url_records = UrlDatabase().find_all()
+    url_records = find_all()
     return render_template(
         'urls.html',
         records=url_records,
@@ -48,8 +55,7 @@ def post_url():
 
     normalized_url = normalize(url_address)
     try:
-        repo = UrlDatabase()
-        existing_record = repo.find_url_name(normalized_url)
+        existing_record = find_url_name(normalized_url)
         if existing_record:
             flash('Страница уже существует', 'info')
             return redirect(
@@ -58,7 +64,7 @@ def post_url():
 
         flash('Страница успешно добавлена', 'success')
         return redirect(
-            url_for('show_url', record_id=repo.save({'name': normalized_url}))
+            url_for('show_url', record_id=save({'name': normalized_url}))
         )
 
     except Exception as ex:
@@ -70,12 +76,11 @@ def post_url():
 
 @app.route('/urls/<int:record_id>', methods=['GET'])
 def show_url(record_id):
-    repo = UrlDatabase()
-    url_record = repo.find_url_id(record_id)
+    url_record = find_url_id(record_id)
     if not url_record:
         return abort(404)
 
-    url_checks = UrlCheckDatabase().find_all_checks(record_id)
+    url_checks = find_all_checks(record_id)
     return render_template(
         'url_detail.html', record=url_record, url_checks=url_checks
     )
@@ -83,7 +88,7 @@ def show_url(record_id):
 
 @app.route('/urls/<int:record_id>/checks', methods=['POST'])
 def check_url(record_id):
-    url_record = UrlDatabase().find_url_id(record_id)
+    url_record = find_url_id(record_id)
     if not url_record:
         return abort(404)
 
@@ -94,10 +99,9 @@ def check_url(record_id):
         flash('Произошла ошибка при проверке', 'danger')
 
     else:
-        checks = UrlCheckDatabase()
         new_check = {'status_code': response.status_code}
         new_check.update(get_page_data(response.content.decode()))
-        checks.save_check(record_id, new_check)
+        save_check(record_id, new_check)
         flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', record_id=record_id))
 
