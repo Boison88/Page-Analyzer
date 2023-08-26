@@ -4,12 +4,12 @@ import requests
 from page_analyzer.page_parser import get_page_data
 from page_analyzer.urls import validate, normalize
 from page_analyzer.db import (
-save,
-find_all,
-find_url_id,
-find_url_name,
-save_check,
-find_all_checks,
+    save,
+    find_all,
+    find_url_id,
+    find_url_name,
+    save_check,
+    find_all_checks,
 )
 
 from dotenv import load_dotenv
@@ -54,24 +54,18 @@ def post_url():
         return render_template('index.html'), 422
 
     normalized_url = normalize(url_address)
-    try:
-        existing_record = find_url_name(normalized_url)
-        if existing_record:
-            flash('Страница уже существует', 'info')
-            return redirect(
-                url_for('show_url', record_id=existing_record.get('id'))
-            )
 
-        flash('Страница успешно добавлена', 'success')
+    existing_record = find_url_name(normalized_url)
+    if existing_record:
+        flash('Страница уже существует', 'info')
         return redirect(
-            url_for('show_url', record_id=save({'name': normalized_url}))
+            url_for('show_url', record_id=existing_record.get('id'))
         )
 
-    except Exception as ex:
-        flash(
-            'Error {raised_ex} while save url'.format(raised_ex=ex), 'danger'
-        )
-        return redirect(url_for('index'))
+    flash('Страница успешно добавлена', 'success')
+    return redirect(
+        url_for('show_url', record_id=save({'name': normalized_url}))
+    )
 
 
 @app.route('/urls/<int:record_id>', methods=['GET'])
