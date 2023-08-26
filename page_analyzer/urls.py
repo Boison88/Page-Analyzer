@@ -17,7 +17,4 @@ def validate(url):
 
 def normalize(url):
     parsed_url = urlparse(url)
-    return '{scheme}://{netloc}'.format(
-        scheme=parsed_url.scheme,
-        netloc=parsed_url.netloc,
-    )
+    return f'{parsed_url.scheme}://{parsed_url.netloc}'

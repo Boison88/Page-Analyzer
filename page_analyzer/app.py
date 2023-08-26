@@ -2,7 +2,7 @@ import os
 import requests
 
 from page_analyzer.page_parser import get_page_data
-from page_analyzer.url_utilities import validate, normalize
+from page_analyzer.urls import validate, normalize
 from page_analyzer.db import UrlCheckDatabase, UrlDatabase
 
 from dotenv import load_dotenv
