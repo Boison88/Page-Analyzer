@@ -21,92 +21,95 @@ def launch_connection():
             connection.close()
 
 
-def save(url_data):
-    with launch_connection() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                'INSERT INTO urls(name, created_at)\
-                VALUES(%s, %s) RETURNING id;',
-                (
-                    url_data.get('name'),
-                    str(datetime.now())
-                )
-            )
-            record = cursor.fetchone()
-            connection.commit()
-        return record[0]
+def connection_decorator(cursor_factory=None):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            with launch_connection() as connection:
+                with connection.cursor(cursor_factory=cursor_factory) as cursor:
+                    return func(connection, cursor, *args, **kwargs)
+        return wrapper
+    return decorator
 
 
-def delete(url_id):
-    with launch_connection() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute('DELETE FROM urls WHERE id=%s;', (url_id,))
-            connection.commit()
+@connection_decorator(cursor_factory=None)
+def save(connection, cursor, url_data):
+    cursor.execute(
+        'INSERT INTO urls(name, created_at)\
+        VALUES(%s, %s) RETURNING id;',
+        (
+            url_data.get('name'),
+            str(datetime.now())
+        )
+    )
+    record = cursor.fetchone()
+    connection.commit()
+    return record[0]
 
 
-def find_all(limit=10):
-    with launch_connection() as connection:
-        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-            cursor.execute(
-                'SELECT\
-                urls.name, ch.status_code, ch.url_id, ch.created_at\
-                FROM urls\
-                JOIN url_checks as ch\
-                ON ch.url_id = urls.id\
-                AND ch.created_at IN (SELECT MAX(created_at)\
-                FROM url_checks GROUP BY url_id)\
-                ORDER BY url_id DESC\
-                LIMIT %s;',
-                (limit,)
-            )
-            return cursor.fetchall()
+@connection_decorator(cursor_factory=None)
+def delete(connection, cursor, url_id):
+    cursor.execute('DELETE FROM urls WHERE id=%s;', (url_id,))
+    connection.commit()
 
 
-def find_url_id(url_id):
-    with launch_connection() as connection:
-        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-            cursor.execute(
-                'SELECT * FROM urls WHERE id = %s;',
-                (url_id,),
-            )
-            return cursor.fetchone()
+@connection_decorator(cursor_factory=RealDictCursor)
+def find_all(connection, cursor, limit=10):
+    cursor.execute(
+        'SELECT\
+        urls.name, ch.status_code, ch.url_id, ch.created_at\
+        FROM urls\
+        JOIN url_checks as ch\
+        ON ch.url_id = urls.id\
+        AND ch.created_at IN (SELECT MAX(created_at)\
+        FROM url_checks GROUP BY url_id)\
+        ORDER BY url_id DESC\
+        LIMIT %s;',
+        (limit,)
+    )
+    return cursor.fetchall()
 
 
-def find_url_name(url_name):
-    with launch_connection() as connection:
-        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-            cursor.execute(
-                'SELECT * FROM urls WHERE name = %s;',
-                (url_name,),
-            )
-            return cursor.fetchone()
+@connection_decorator(cursor_factory=RealDictCursor)
+def find_url_id(connection, cursor, url_id):
+    cursor.execute(
+        'SELECT * FROM urls WHERE id = %s;',
+        (url_id,),
+    )
+    return cursor.fetchone()
 
 
-def save_check(url_id, check_data):
-    with launch_connection() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                'INSERT INTO url_checks\
-                (url_id, status_code, h1, title, description, created_at)\
-                VALUES(%s, %s, %s, %s, %s, %s);',
-                (
-                    url_id,
-                    check_data.get('status_code', ''),
-                    check_data.get('h1', ''),
-                    check_data.get('title', ''),
-                    check_data.get('meta', ''),
-                    str(datetime.now()),
-                ),
-            )
-            connection.commit()
+@connection_decorator(cursor_factory=RealDictCursor)
+def find_url_name(connection, cursor, url_name):
+    cursor.execute(
+        'SELECT * FROM urls WHERE name = %s;',
+        (url_name,),
+    )
+    return cursor.fetchone()
 
 
-def find_all_checks(url_id):
-    with launch_connection() as connection:
-        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-            cursor.execute(
-                'SELECT * FROM url_checks WHERE url_id=%s\
-                ORDER BY created_at DESC;',
-                (url_id,)
-            )
-            return cursor.fetchall()
+@connection_decorator(cursor_factory=None)
+def save_check(connection, cursor, url_id, check_data):
+    cursor.execute(
+        'INSERT INTO url_checks\
+        (url_id, status_code, h1, title, description, created_at)\
+        VALUES(%s, %s, %s, %s, %s, %s);',
+        (
+            url_id,
+            check_data.get('status_code', ''),
+            check_data.get('h1', ''),
+            check_data.get('title', ''),
+            check_data.get('meta', ''),
+            str(datetime.now()),
+        ),
+    )
+    connection.commit()
+
+
+@connection_decorator(cursor_factory=RealDictCursor)
+def find_all_checks(connection, cursor, url_id):
+    cursor.execute(
+        'SELECT * FROM url_checks WHERE url_id=%s\
+        ORDER BY created_at DESC;',
+        (url_id,)
+    )
+    return cursor.fetchall()
