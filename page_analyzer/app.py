@@ -80,21 +80,27 @@ def show_url(record_id):
     )
 
 
+def get_page(url):
+    response = requests.get(url)
+    decode_content = response.content.decode()
+    status_code = response.status_code
+    return response, decode_content, status_code
+
+
 @app.route('/urls/<int:record_id>/checks', methods=['POST'])
 def check_url(record_id):
     url_record = find_url_id(record_id)
+    url_name = url_record.get('name')
+    response, decode_content, status_code = get_page(url_name)
     if not url_record:
         return abort(404)
-
     try:
-        response = requests.get(url_record.get('name'))
         response.raise_for_status()
     except requests.exceptions.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
-
     else:
-        new_check = {'status_code': response.status_code}
-        new_check.update(get_page_data(response.content.decode()))
+        new_check = {'status_code': status_code}
+        new_check.update(get_page_data(decode_content))
         save_check(record_id, new_check)
         flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', record_id=record_id))
