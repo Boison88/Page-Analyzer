@@ -32,7 +32,6 @@ def get_page(url):
         response.raise_for_status()
     except requests.exceptions.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
-    else:
-        new_check = {'status_code': status_code}
-        new_check.update(get_page_data(decode_content))
-        return new_check
+    new_check = {'status_code': status_code}
+    new_check.update(get_page_data(decode_content))
+    return new_check
