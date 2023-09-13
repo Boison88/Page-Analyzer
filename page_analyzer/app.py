@@ -84,8 +84,9 @@ def check_url(record_id):
     url_name = url_record.get('name')
     if not url_record:
         return abort(404)
-    save_check(record_id, get_page(url_name))
-    flash('Страница успешно проверена', 'success')
+    else:
+        save_check(record_id, get_page(url_name))
+        flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', record_id=record_id))
 
 
