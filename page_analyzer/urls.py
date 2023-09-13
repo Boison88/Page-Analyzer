@@ -3,6 +3,7 @@ import requests
 from page_analyzer.page_parser import get_page_data
 from urllib.parse import urlparse
 from validators import url as url_validator
+from flask import flash
 
 MAX_URL_LENGTH = 255
 
