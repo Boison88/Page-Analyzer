@@ -21,7 +21,7 @@ def launch_connection():
             connection.close()
 
 
-def connection_decorator(cursor_factory=None):
+def connection_db(cursor_factory=None):
     def decorator(func):
         def wrapper(*args, **kwargs):
             with launch_connection() as connection:
@@ -31,8 +31,8 @@ def connection_decorator(cursor_factory=None):
     return decorator
 
 
-@connection_decorator(cursor_factory=None)
-def save(connection, cursor, url_data):
+@connection_db(cursor_factory=None)
+def save_url_db(connection, cursor, url_data):
     cursor.execute(
         'INSERT INTO urls(name, created_at)\
         VALUES(%s, %s) RETURNING id;',
@@ -46,14 +46,14 @@ def save(connection, cursor, url_data):
     return record[0]
 
 
-@connection_decorator(cursor_factory=None)
-def delete(connection, cursor, url_id):
+@connection_db(cursor_factory=None)
+def delete_url_db(connection, cursor, url_id):
     cursor.execute('DELETE FROM urls WHERE id=%s;', (url_id,))
     connection.commit()
 
 
-@connection_decorator(cursor_factory=RealDictCursor)
-def find_all(connection, cursor, limit=10):
+@connection_db(cursor_factory=RealDictCursor)
+def find_all_urls_db(connection, cursor, limit=10):
     cursor.execute(
         'SELECT\
         urls.name, ch.status_code, ch.url_id, ch.created_at\
@@ -69,7 +69,7 @@ def find_all(connection, cursor, limit=10):
     return cursor.fetchall()
 
 
-@connection_decorator(cursor_factory=RealDictCursor)
+@connection_db(cursor_factory=RealDictCursor)
 def find_url_id(connection, cursor, url_id):
     cursor.execute(
         'SELECT * FROM urls WHERE id = %s;',
@@ -78,7 +78,7 @@ def find_url_id(connection, cursor, url_id):
     return cursor.fetchone()
 
 
-@connection_decorator(cursor_factory=RealDictCursor)
+@connection_db(cursor_factory=RealDictCursor)
 def find_url_name(connection, cursor, url_name):
     cursor.execute(
         'SELECT * FROM urls WHERE name = %s;',
@@ -87,7 +87,7 @@ def find_url_name(connection, cursor, url_name):
     return cursor.fetchone()
 
 
-@connection_decorator(cursor_factory=None)
+@connection_db(cursor_factory=None)
 def save_check(connection, cursor, url_id, check_data):
     cursor.execute(
         'INSERT INTO url_checks\
@@ -105,7 +105,7 @@ def save_check(connection, cursor, url_id, check_data):
     connection.commit()
 
 
-@connection_decorator(cursor_factory=RealDictCursor)
+@connection_db(cursor_factory=RealDictCursor)
 def find_all_checks(connection, cursor, url_id):
     cursor.execute(
         'SELECT * FROM url_checks WHERE url_id=%s\

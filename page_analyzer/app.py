@@ -1,11 +1,9 @@
 import os
-import requests
 
-from page_analyzer.page_parser import get_page_data
-from page_analyzer.urls import validate, normalize
+from page_analyzer.urls import validate, normalize, get_page
 from page_analyzer.db import (
-    save,
-    find_all,
+    save_url_db,
+    find_all_urls_db,
     find_url_id,
     find_url_name,
     save_check,
@@ -37,7 +35,7 @@ def index():
 
 @app.route('/urls', methods=['GET'])
 def show_urls():
-    url_records = find_all()
+    url_records = find_all_urls_db()
     return render_template(
         'urls.html',
         records=url_records,
@@ -64,7 +62,7 @@ def post_url():
 
     flash('Страница успешно добавлена', 'success')
     return redirect(
-        url_for('show_url', record_id=save({'name': normalized_url}))
+        url_for('show_url', record_id=save_url_db({'name': normalized_url}))
     )
 
 
@@ -80,29 +78,14 @@ def show_url(record_id):
     )
 
 
-def get_page(url):
-    response = requests.get(url)
-    decode_content = response.content.decode()
-    status_code = response.status_code
-    return response, decode_content, status_code
-
-
 @app.route('/urls/<int:record_id>/checks', methods=['POST'])
 def check_url(record_id):
     url_record = find_url_id(record_id)
     url_name = url_record.get('name')
-    response, decode_content, status_code = get_page(url_name)
     if not url_record:
         return abort(404)
-    try:
-        response.raise_for_status()
-    except requests.exceptions.RequestException:
-        flash('Произошла ошибка при проверке', 'danger')
-    else:
-        new_check = {'status_code': status_code}
-        new_check.update(get_page_data(decode_content))
-        save_check(record_id, new_check)
-        flash('Страница успешно проверена', 'success')
+    save_check(record_id, get_page(url_name))
+    flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', record_id=record_id))
 
 
