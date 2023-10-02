@@ -13,12 +13,12 @@ This is a site that analyzes the specified pages for SEO suitability.
 ### How to install
 #### 1. Clone this repository
 ```
-    git clone https://github.com/Boison88/python-project-83
+    git clone https://github.com/Boison88/Page-Analyzer
 ```
 
 #### 2. Change Directory
 ```
-    cd python-project-83
+    cd Page-Analyzer
 ```
 
 #### 3. Create PostgreSQL database
